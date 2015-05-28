@@ -3,6 +3,8 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
 class TimelineRenderer
+  importanceShiftPoints: [250, 15, 4.3, 1.5, 0.45, 0]
+
   constructor: ->
     @zoom = 100 # Pixels per year
     d3.json '/events.json', (error, json) =>
@@ -40,12 +42,14 @@ class TimelineRenderer
     @window.append 'g'
       .attr 'class', 'date-axis'
       .call @dateAxis
+    level = @detailLevel()
     eventG = @window.selectAll '.event'
       .data @data
       .enter()
       .append 'g'
       .attr 'class', 'event'
       .attr 'data-importance', (event) => event.importance
+      .attr 'data-visible', (event) => event.importance >= level
       .attr 'transform', (event) => "translate(0, #{@dateScale(event.start)})"
     eventG.append 'text'
       .attr 'x', 10
@@ -54,10 +58,15 @@ class TimelineRenderer
       .attr 'r', 5
 
   zoomed: ->
+    level = @detailLevel()
     @svg.select('.date-axis').call @dateAxis
     @window.selectAll '.event'
       .data @data
       .attr 'transform', (event) => "translate(0, #{@dateScale(event.start)})"
+      .attr 'data-visible', (event) => event.importance >= level
 
+  detailLevel: ->
+    for level, i in @importanceShiftPoints
+      if @zoom.scale() >= level then return i
 
 window.timeline = new TimelineRenderer()
