@@ -1,28 +1,18 @@
-== README
+== Hi
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This project is not likely to be something you care about. Sorry to disappoint.
 
-Things you may want to cover:
+=== Importance Levels
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+* 0: Noise (automatically imported things which must be promoted to be seen)
+  Examples: took a photo, checked in on a social location service
+* 1: Quotidian
+  Examples: met a workout goal, ate an interesting meal, binge-watched a TV show
+* 2: Notable
+  Examples: took a long train journey, went to a concert, attended a convention, got really sick
+* 3: Unique
+  Examples: traveled somewhere new and distant, served on a jury, owned a car
+* 4: Life-changing
+  Examples: met your spouse, got a tattoo, had a job, started learning Mandarin, survived a disaster, lived somewhere
+* 5: Milestone
+  Examples: was born, started school, got married, bought a home, had a child, retired

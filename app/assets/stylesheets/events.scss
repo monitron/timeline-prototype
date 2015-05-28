@@ -1,3 +1,54 @@
 // Place all the styles related to the events controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+#timeline-visualization {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  font: 14px sans-serif;
+
+  .date-axis {
+    path, line {
+      fill: none;
+      stroke: #f00;
+    }
+  }
+
+  .overlay {
+    fill: none;
+    pointer-events: all;
+  }
+
+  .event {
+    text {
+      alignment-baseline: central;
+    }
+    
+    &[data-importance="5"] {
+      font-size: 20px;
+    }
+
+    &[data-importance="4"] {
+      font-size: 15px;
+      opacity: .5;
+    }
+
+    &[data-importance="3"] {
+      font-size: 12px;
+      opacity: .4;
+    }
+
+    &[data-importance="2"] {
+      font-size: 10px;
+      opacity: .3;
+    }
+
+    &[data-importance="1"] {
+      font-size: 8px;
+      opacity: .2;
+    }
+  }
+}
