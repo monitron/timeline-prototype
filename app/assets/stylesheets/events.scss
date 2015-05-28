@@ -13,7 +13,7 @@
   .date-axis {
     path, line {
       fill: none;
-      stroke: #f00;
+      stroke: #aaa;
     }
   }
 
@@ -22,6 +22,11 @@
     pointer-events: all;
   }
 
+  .now {
+    stroke: #c33;
+    stroke-width: 2px;
+  }
+  
   .event {
     &[data-visible="true"]:hover {
       opacity: 1 !important;
@@ -41,6 +46,10 @@
 
     .bridge {
       opacity: .2;
+    }
+
+    &[data-is-open-ended="true"] .end {
+      display: none;
     }
     
     &[data-importance="5"] {

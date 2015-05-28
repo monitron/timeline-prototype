@@ -3,17 +3,19 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
 class TimelineRenderer
+  gutterWidth: 100
   importanceShiftPoints: [250, 15, 4.3, 1.5, 0.45, 0]
   dotRadius: 5
 
   constructor: ->
     @zoom = 100 # Pixels per year
+    @now = new Date()
     d3.json '/events.json', (error, json) =>
       if error then return console.warn(error)
       @data = json
       for event in @data
-        event.start   = d3.time.format.iso.parse(event.start)
-        event.end     = d3.time.format.iso.parse(event.end)
+        event.start = d3.time.format.iso.parse(event.start)
+        event.end = if event.end? then d3.time.format.iso.parse(event.end) else @now
       @dateExtent = d3.extent(_.flatten(@data.map((e) -> [e.start, e.end])))
       @build()
 
@@ -33,7 +35,7 @@ class TimelineRenderer
       .on 'zoom', => @zoomed()
     @svg = d3.select($el[0])
       .append 'g'
-      .attr 'transform', "translate(100, 0)"
+      .attr 'transform', "translate(#{@gutterWidth}, 0)"
     @window = @svg.append 'g'
       .call @zoom
     @window.append 'rect'
@@ -43,6 +45,12 @@ class TimelineRenderer
     @window.append 'g'
       .attr 'class', 'date-axis'
       .call @dateAxis
+    @window.append 'line'
+      .attr 'class', 'now'
+      .attr 'x1', -@gutterWidth
+      .attr 'x2', @width
+      .attr 'y1', @dateScale(@now)
+      .attr 'y2', @dateScale(@now)
     level = @detailLevel()
     eventG = @window.selectAll '.event'
       .data @data
@@ -52,6 +60,7 @@ class TimelineRenderer
       .attr 'data-importance', (event) => event.importance
       .attr 'data-visible', (event) => event.importance >= level
       .attr 'data-is-range', (event) => event.start != event.end
+      .attr 'data-is-open-ended', (event) => event.end == @now
     eventG.append 'text'
       .attr 'class', 'title'
       .attr 'x', 10
@@ -73,6 +82,9 @@ class TimelineRenderer
       .attr 'height', (event) => @dateScale(event.end) - @dateScale(event.start)
   zoomed: ->
     level = @detailLevel()
+    @svg.select('.now')
+      .attr 'y1', @dateScale(@now)
+      .attr 'y2', @dateScale(@now)
     @svg.select('.date-axis').call @dateAxis
     eventContext = @window.selectAll '.event'
       .attr 'data-visible', (event) => event.importance >= level
