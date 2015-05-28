@@ -10,23 +10,25 @@ class TimelineRenderer
       @data = json
       for event in @data
         event.start = d3.time.format.iso.parse(event.start)
-        event.end   = d3.time.format.iso.parse(event.start)
+        event.end   = d3.time.format.iso.parse(event.end)
       @dateExtent = d3.extent(_.flatten(@data.map((e) -> [e.start, e.end])))
       @build()
 
   build: ->
+    $el = $('#timeline-visualization')
     @dateScale = d3.time.scale.utc()
       .domain @dateExtent
       .range  [0, @zoom * ((@dateExtent[1] - @dateExtent[0]) / 365 / 86400000)]
-    @width = $('#timeline-visualization').width()
-    @height = $('#timeline-visualization').height()
+    @width = $el.width()
+    @height = $el.height()
     @dateAxis = d3.svg.axis()
       .scale @dateScale
       .orient 'left'
+      .ticks 30
     @zoom = d3.behavior.zoom()
       .y @dateScale
       .on 'zoom', => @zoomed()
-    @svg = d3.select('#timeline-visualization')
+    @svg = d3.select($el[0])
       .append 'g'
       .attr 'transform', "translate(100, 0)"
     @window = @svg.append 'g'
