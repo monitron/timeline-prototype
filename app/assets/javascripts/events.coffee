@@ -4,6 +4,7 @@
 
 class TimelineRenderer
   importanceShiftPoints: [250, 15, 4.3, 1.5, 0.45, 0]
+  dotRadius: 5
 
   constructor: ->
     @zoom = 100 # Pixels per year
@@ -11,8 +12,8 @@ class TimelineRenderer
       if error then return console.warn(error)
       @data = json
       for event in @data
-        event.start = d3.time.format.iso.parse(event.start)
-        event.end   = d3.time.format.iso.parse(event.end)
+        event.start   = d3.time.format.iso.parse(event.start)
+        event.end     = d3.time.format.iso.parse(event.end)
       @dateExtent = d3.extent(_.flatten(@data.map((e) -> [e.start, e.end])))
       @build()
 
@@ -50,20 +51,40 @@ class TimelineRenderer
       .attr 'class', 'event'
       .attr 'data-importance', (event) => event.importance
       .attr 'data-visible', (event) => event.importance >= level
-      .attr 'transform', (event) => "translate(0, #{@dateScale(event.start)})"
+      .attr 'data-is-range', (event) => event.start != event.end
     eventG.append 'text'
+      .attr 'class', 'title'
       .attr 'x', 10
+      .attr 'y', (event) => @dateScale(event.start)
       .text (event) -> event.title
     eventG.append 'circle'
-      .attr 'r', 5
-
+      .attr 'class', 'start'
+      .attr 'r', @dotRadius
+      .attr 'cy', (event) => @dateScale(event.start)
+    eventG.append 'circle'
+      .attr 'class', 'end'
+      .attr 'r', @dotRadius
+      .attr 'cy', (event) => @dateScale(event.end)
+    eventG.append 'rect'
+      .attr 'class', 'bridge'
+      .attr 'x', -@dotRadius
+      .attr 'width', @dotRadius * 2
+      .attr 'y', (event) => @dateScale(event.start)
+      .attr 'height', (event) => @dateScale(event.end) - @dateScale(event.start)
   zoomed: ->
     level = @detailLevel()
     @svg.select('.date-axis').call @dateAxis
-    @window.selectAll '.event'
-      .data @data
-      .attr 'transform', (event) => "translate(0, #{@dateScale(event.start)})"
+    eventContext = @window.selectAll '.event'
       .attr 'data-visible', (event) => event.importance >= level
+    eventContext.selectAll 'text'
+      .attr 'y', (event) => @dateScale(event.start)
+    eventContext.selectAll '.start'
+      .attr 'cy', (event) => @dateScale(event.start)
+    eventContext.selectAll '.end'
+      .attr 'cy', (event) => @dateScale(event.end)
+    eventContext.selectAll '.bridge'
+      .attr 'y', (event) => @dateScale(event.start)
+      .attr 'height', (event) => @dateScale(event.end) - @dateScale(event.start)
 
   detailLevel: ->
     for level, i in @importanceShiftPoints

@@ -23,8 +23,24 @@
   }
 
   .event {
-    text {
+    &[data-visible="true"]:hover {
+      opacity: 1 !important;
+
+      .bridge {
+        opacity: 0.5;
+      }
+
+      .title, .start, .end, .bridge {
+        fill: #33b;
+      }
+    }
+    
+    .title {
       alignment-baseline: central;
+    }
+
+    .bridge {
+      opacity: .2;
     }
     
     &[data-importance="5"] {
@@ -58,6 +74,7 @@
     &[data-visible="false"] {
       opacity: 0.0;
       transition: opacity 300ms;
+      pointer-events: none;
     }
   }
 }
